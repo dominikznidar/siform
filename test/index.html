@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<title>SiForm tests</title>
+		<script type="text/javascript" src="../lib/prototype.js"></script>
+		<script type="text/javascript" src="../src/siform.js"></script>
+	</head>
+	<body>
+		<div id="SiformSimple">simple test drop target</div>
+		
+		<script type="text/javascript">
+			document.observe("dom:loaded", function() {
+				var siformSimple = new SiForm($("SiformSimple"), {
+					displayType: "list",
+					info: "Info description",
+					buttons: ["save", { title:"back", onclick: "alert('go back was clicked'); return false;" } ],
+					formOptions: {
+						action: "submit.php",
+						method: "post"
+					},
+					elements: [{
+						type: "textfield",
+						title: "Name",
+						required: true,
+						value: ""
+					}, {
+						type: "textfield",
+						title: "Surname",
+						required: true,
+						value: ""
+					}, {
+						type: "radio",
+						title: "Gender",
+						value: "m",
+						values: [["f", "Female"], ["m", "Male"]]
+					}]
+				});
+			});
+		</script>
+		
+	</body>
+</html>
