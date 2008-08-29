@@ -18,11 +18,19 @@ var SiForm = Class.create({
 	buildForm: function() {
 		var formElements = this.getFormElements();
 		var formButtons = this.getFormButtons();
+		console.info(formElements);
 		return this.createElement("form", { action: this.options.formOptions.action }, [].concat(formElements, formButtons));
 	},
 	
 	getFormElements: function() {
-		return [];
+		var elements = [];
+		for (i=0, len=this.options.elements.length; i<len; ++i) {
+			if (element = SiForm.Elements[this.options.elements[i].type]) {
+				console.info(element);
+				elements.push(element((this.options.elements[i])));
+			}
+		}
+		return elements;
 	},
 	
 	getFormButtons: function() {
@@ -39,7 +47,7 @@ var SiForm = Class.create({
 		c = "<"+tagName;
 		if (attributes) {
 			$H(attributes).each(function(pair) { c+=" "+(pair[0]!='className'?pair[0]:'class')+"=\""+pair[1]+"\""; });
-		} 
+		}
 		c+= ">";
 		if (childNodes.length && Object.isArray(childNodes)) {
 			for (i=0, len=childNodes.length; i < len; ++i) c+= this.createElement(childNodes[i][0], childNodes[i][1], childNodes[i][2]);
@@ -54,3 +62,18 @@ var SiForm = Class.create({
 	}
 
 });
+
+SiForm.Elements = {
+	textfield: function(options) {
+		// set default options
+		options = Object.extend({
+			name: '',
+			value: '',
+			validations: false,
+			tip: ''
+		}, options || {});
+
+		// build element
+		return ['input', { name: options.name, value: options.value, id: 'f_'+options.name }];
+	}
+};
