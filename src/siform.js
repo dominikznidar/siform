@@ -17,17 +17,24 @@ var SiForm = Class.create({
 	// build form
 	buildForm: function() {
 		var formElements = this.getFormElements();
-		var formButtons = this.getFormButtons();
 		console.info(formElements);
-		return this.createElement("form", { action: this.options.formOptions.action }, [].concat(formElements, formButtons));
+		var formButtons = this.getFormButtons();
+		if (this.options.displayType == 'table') {
+			wrapper = ["table", { cellpadding: 0, cellspacing: 0 }, [
+				["tbody", {}, [].concat(formElements, formButtons) ]
+			]];
+		} else {
+			wrapper = ["ul", {}, [].concat(formElements, formButtons)];
+		}
+		return this.createElement("form", { action: this.options.formOptions.action }, [wrapper]);
 	},
 	
 	getFormElements: function() {
 		var elements = [];
 		for (i=0, len=this.options.elements.length; i<len; ++i) {
-			if (element = SiForm.Elements[this.options.elements[i].type]) {
-				console.info(element);
-				elements.push(element((this.options.elements[i])));
+			elOptions = this.options.elements[i];
+			if (element = SiForm.Elements[elOptions.type]) {
+				elements.push(this.labelElement(element(elOptions), elOptions));
 			}
 		}
 		return elements;
@@ -35,6 +42,18 @@ var SiForm = Class.create({
 	
 	getFormButtons: function() {
 		return [["ul", { className: 'buttons' }]];
+	},
+	
+	labelElement: function(element, elementOptions) {
+		label = ["label", { for: "f_"+elementOptions.name }];
+		if (this.options.displayType == "table") {
+			return ["tr", {}, [
+				["td", {}, [label]],
+				["td", {}, [element]]
+			]];
+		} else {
+			return ["li", {}, [label, element]];
+		}
 	},
 
 	// create element
@@ -50,6 +69,7 @@ var SiForm = Class.create({
 		}
 		c+= ">";
 		if (childNodes.length && Object.isArray(childNodes)) {
+			console.log(tagName, childNodes.length);
 			for (i=0, len=childNodes.length; i < len; ++i) c+= this.createElement(childNodes[i][0], childNodes[i][1], childNodes[i][2]);
 		}
 		c+= "</"+tagName+">";
