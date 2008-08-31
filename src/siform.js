@@ -98,6 +98,19 @@ SiForm.Elements = {
 		// build element
 		return ['input', { name: options.name, value: options.value, id: 'f_'+options.name }];
 	},
+	
+	textarea: function(options) {
+		// set default options
+		options = Object.extend({
+			name: "",
+			value: "",
+			rows: "3"
+		}, options || {});
+		
+		// build element
+		return ['textarea', { name: options.name, id: "f_"+options.name, rows: options.rows }, [options.value]];
+	},
+	
 	radio : function(options) {
 		// set default options
 		options = Object.extend({
