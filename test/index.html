@@ -20,7 +20,7 @@
 					info: "Info description",
 					buttons: ["save", { title:"back", onclick: "alert('go back was clicked'); return false;" } ],
 					formOptions: {
-						//action: "submit.php",
+						action: "#",
 						method: "post"
 					},
 					elements: [{
@@ -58,7 +58,6 @@
 						name: "country",
 						values: shortListOfCountries,
 						value: "SI",
-						multiple: true,
 						validations: ["required"]
 					},{
 						type: "checkbox",

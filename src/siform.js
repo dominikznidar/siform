@@ -1,5 +1,6 @@
 var SiForm = Class.create({
 	validations: [],
+
 	// initialize SiForm
 	initialize: function(element, options) {
 		this.element = element;
@@ -38,7 +39,7 @@ var SiForm = Class.create({
 			//onSubmit: "console.log($F('"+this.options.formOptions.id+"'))"
 		}, [wrapper]);
 	},
-	
+
 	getFormElements: function(els) {
 		var elements = [];
 		for (i=0, len=els.length; i<len; ++i) {
@@ -57,11 +58,11 @@ var SiForm = Class.create({
 		}
 		return elements;
 	},
-	
+
 	getFormButtons: function() {
 		return [["ul", { className: 'buttons' }, [["li", {}, [["input", { type: "submit" }]]]]]];
 	},
-	
+
 	labelElement: function(element, elementOptions) {
 		label = ["label", { htmlFor: "f_"+elementOptions.name }, [elementOptions.title]];
 		if (this.options.displayType == "table") {
@@ -98,29 +99,31 @@ var SiForm = Class.create({
 		c+= "</"+tagName+">";
 		return c;
 	},
-	
+
 	// validate form
 	validateForm: function(e) {
-		var values = $(this.options.formOptions.id).serialize(true);
+		var values = $(this.options.formOptions.id).serialize(true), foundError = false;
 		if (this.validations.length == 0) return true;
 		for (var i=0,len=this.validations.length; i<len; ++i) {
 			if (opts = SiForm.Validations[this.validations[i][1]]) {
 				re = new RegExp(opts.pattern);
 				if (!re.test(values[this.validations[i][0]])) {
-					console.log("validation failed!", this.validations[i]);
+					$("f_"+this.validations[i][0]).addClassName("val-error");
+					foundErrors = true
+				} else {
+					$("f_"+this.validations[i][0]).removeClassName("val-error");
 				}
 			}
 		}
 
-		Event.stop(e);
-		return false;
+		if (foundErrors) Event.stop(e);
 	},
-	
+
 	// add new validation
 	addValidation: function(field, validation) {
 		this.validations.push([field, validation]);
 	},
-	
+
 	// throw error
 	error: function(errMsg) {
 		alert("SiForm error :: "+errMsg);
@@ -203,6 +206,32 @@ SiForm.Elements = {
 				value = title = options.values[i];
 			}
 			els.push(["li", {}, [["input", Object.extend(value==options.value ? { checked: "1" } : {}, { type: "radio", name: options.name, value: value, id: "f_"+options.name+"_"+value.underscore()})]]]);
+			els.push(["li", {}, [["label", { htmlFor: "f_"+options.name+"_"+value.underscore()}, [title]]]]);
+		}
+		return ["ul", {}, els];
+	},
+	
+	checkbox : function(options) {
+		// set default options
+		options = Object.extend({
+			name: "",
+			value: "",
+			values: [],
+			newlines: false
+		}, options || {});
+
+		// build element
+		var els = [];
+		if (!options.values.length) return "no values";
+		if (!Object.isArray(options.value)) options.value = [options.value]; 
+		for (var i=0, len=options.values.length; i<len; ++i) {
+			if (Object.isArray(options.values[i])) {
+				value = options.values[i][0];
+				title = options.values[i][1];
+			} else {
+				value = title = options.values[i];
+			}
+			els.push(["li", {}, [["input", Object.extend(options.value.indexOf(value)>-1 ? { checked: "1" } : {}, { type: "checkbox", name: options.name, value: value, id: "f_"+options.name+"_"+value.underscore()})]]]);
 			els.push(["li", {}, [["label", { htmlFor: "f_"+options.name+"_"+value.underscore()}, [title]]]]);
 		}
 		return ["ul", {}, els];
