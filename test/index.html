@@ -5,7 +5,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title>SiForm tests</title>
-		<script type="text/javascript" src="../lib/prototype.js"></script>
+		<script type="text/javascript" src="../lib/prototype.git.js"></script>
 		<script type="text/javascript" src="../src/siform.js"></script>
 	</head>
 	<body>
@@ -27,14 +27,20 @@
 						type: "textfield",
 						title: "First name",
 						name: "first_name",
-						required: true,
+						validations: ["required"],
 						value: "Dominik"
 					}, {
 						type: "textfield",
 						title: "Last name",
 						name: "last_name",
-						required: true,
+						validations: ["required"],
 						value: "Znidar"
+					}, {
+						type: "textfield",
+						title: "E-mail",
+						name: "email",
+						validations: ["required","email"],
+						value: "test.address@email.com"
 					}, {
 						type: "radio",
 						title: "Gender",
@@ -52,7 +58,8 @@
 						name: "country",
 						values: shortListOfCountries,
 						value: "SI",
-						multiple: true
+						multiple: true,
+						validations: ["required"]
 					},{
 						type: "checkbox",
 						title: "Interests",

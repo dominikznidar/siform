@@ -1,5 +1,5 @@
 var SiForm = Class.create({
-	requiredFields: [],
+	validations: [],
 	// initialize SiForm
 	initialize: function(element, options) {
 		this.element = element;
@@ -17,11 +17,12 @@ var SiForm = Class.create({
 		}, this.options.formOptions);
 		if (!this.options.formOptions.id) this.options.formOptions.id = "siform_"+Math.round(Math.random()*100000);
 		this.element.update(this.buildForm());
+		
 	},
 
 	// build form
 	buildForm: function() {
-		var formElements = this.getFormElements();
+		var formElements = this.getFormElements(this.options.elements);
 		var formButtons = this.getFormButtons();
 		if (this.options.displayType == 'table') {
 			wrapper = ["table", { cellpadding: 0, cellspacing: 0 }, [
@@ -38,12 +39,20 @@ var SiForm = Class.create({
 		}, [wrapper]);
 	},
 	
-	getFormElements: function() {
+	getFormElements: function(els) {
 		var elements = [];
-		for (i=0, len=this.options.elements.length; i<len; ++i) {
-			elOptions = this.options.elements[i];
+		for (i=0, len=els.length; i<len; ++i) {
+			elOptions = els[i];
 			if (element = SiForm.Elements[elOptions.type]) {
 				elements.push(this.labelElement(element(elOptions), elOptions));
+				if (elOptions.validations) {
+					if (Object.isString(elOptions.validations)) this.addValidation(elOptions.name, elOptions.validations);
+					else {
+						for (var j=0,valc=elOptions.validations.length; j<valc; ++j) {
+							this.addValidation(elOptions.name, elOptions.validations[j]);
+						}
+					}
+				}
 			}
 		}
 		return elements;
@@ -54,7 +63,7 @@ var SiForm = Class.create({
 	},
 	
 	labelElement: function(element, elementOptions) {
-		label = ["label", { for: "f_"+elementOptions.name }, [elementOptions.title]];
+		label = ["label", { htmlFor: "f_"+elementOptions.name }, [elementOptions.title]];
 		if (this.options.displayType == "table") {
 			return ["tr", {}, [
 				["td", {}, [label]],
@@ -74,7 +83,7 @@ var SiForm = Class.create({
 		tagName = args[0];
 		c = "<"+tagName;
 		if (attributes) {
-			$H(attributes).each(function(pair) { c+=" "+(pair[0]!='className'?pair[0]:'class')+"=\""+pair[1]+"\""; });
+			$H(attributes).each(function(pair) { c+=" "+(pair[0]!="className"?(pair[0]!="htmlFor"?pair[0]:"for"):"class")+"=\""+pair[1]+"\""; });
 		}
 		c+= ">";
 		if (childNodes.length && Object.isArray(childNodes)) {
@@ -88,6 +97,16 @@ var SiForm = Class.create({
 		}
 		c+= "</"+tagName+">";
 		return c;
+	},
+	
+	// validate form
+	validateForm: function() {
+		console.log("test");
+	},
+	
+	// add new validation
+	addValidation: function(field, validation) {
+		this.validations.push([field, validation]);
 	},
 	
 	// throw error
@@ -172,7 +191,7 @@ SiForm.Elements = {
 				value = title = options.values[i];
 			}
 			els.push(["li", {}, [["input", Object.extend(value==options.value ? { checked: "1" } : {}, { type: "radio", name: options.name, value: value, id: "f_"+options.name+"_"+value.underscore()})]]]);
-			els.push(["li", {}, [["label", { for: "f_"+options.name+"_"+value.underscore()}, [title]]]]);
+			els.push(["li", {}, [["label", { htmlFor: "f_"+options.name+"_"+value.underscore()}, [title]]]]);
 		}
 		return ["ul", {}, els];
 	}
