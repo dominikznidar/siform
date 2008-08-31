@@ -51,7 +51,14 @@
 						title: "Country",
 						name: "country",
 						values: shortListOfCountries,
-						value: "SI"
+						value: "SI",
+						multiple: true
+					},{
+						type: "checkbox",
+						title: "Interests",
+						name: "interests",
+						values: ["sleeping", "working", "cycling", "schwimming"],
+						value: ["sleeping","schwimming"]
 					}]
 				});
 			});

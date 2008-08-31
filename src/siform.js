@@ -3,15 +3,20 @@ var SiForm = Class.create({
 	// initialize SiForm
 	initialize: function(element, options) {
 		this.element = element;
-		if (!this.setOptions(options)) return false;
+		this.options = Object.extend({
+			displayType: "list",
+			formOptions: {},
+			info: "",
+			buttons: [],
+			elements: []
+		}, options || {});
+		this.options.formOptions = Object.extend({
+			id: "",
+			action: "",
+			method: "post"
+		}, this.options.formOptions);
+		if (!this.options.formOptions.id) this.options.formOptions.id = "siform_"+Math.round(Math.random()*100000);
 		this.element.update(this.buildForm());
-	},
-
-	// set options, check for default values
-	setOptions: function(options) {
-		if (!options.displayType) options.displayType = 'list';
-		this.options = options;
-		return true;
 	},
 
 	// build form
@@ -25,7 +30,12 @@ var SiForm = Class.create({
 		} else {
 			wrapper = ["ul", {}, [].concat(formElements, formButtons)];
 		}
-		return this.createElement("form", { action: this.options.formOptions.action }, [wrapper]);
+		return this.createElement("form", { 
+			action: this.options.formOptions.action,
+			method: this.options.formOptions.method,
+			id: this.options.formOptions.id,
+			onSubmit: "console.log($F('"+this.options.formOptions.id+"'))"
+		}, [wrapper]);
 	},
 	
 	getFormElements: function() {
@@ -118,7 +128,9 @@ SiForm.Elements = {
 			value: "",
 			values: [],
 			valueField: "id",
-			titleField: "title"
+			titleField: "title",
+			multiple: false,
+			size: 3
 		}, options || {});
 
 		// build element
@@ -127,8 +139,6 @@ SiForm.Elements = {
 		for (var i=0, len=options.values.length; i<len; ++i) {
 			if (valuesType == "object") {
 				values = $H(options.values[i]);
-				//id = options.values[i][options.idField];
-				//value = options.values[i][options.valueField];
 				value = values.get(valueField);
 				title = values.get(titleField);
 			} else if (valuesType == "array") {
@@ -139,7 +149,7 @@ SiForm.Elements = {
 			}
 			els.push(["option", Object.extend(value==options.value ? { selected: "1" } : {}, { value: value }), [title]]);
 		}
-		return ["select", { name: options.name, id: "f_"+options.name }, els];
+		return ["select", Object.extend(options.multiple ? { multiple: "1", size: options.size } : {}, { name: options.name, id: "f_"+options.name }), els];
 	},
 	
 	radio : function(options) {
