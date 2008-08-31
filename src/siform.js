@@ -108,7 +108,38 @@ SiForm.Elements = {
 		}, options || {});
 		
 		// build element
-		return ['textarea', { name: options.name, id: "f_"+options.name, rows: options.rows }, [options.value]];
+		return ["textarea", { name: options.name, id: "f_"+options.name, rows: options.rows }, [options.value]];
+	},
+	
+	select: function(options) {
+		// set default options
+		options = Object.extend({
+			name: "",
+			value: "",
+			values: [],
+			valueField: "id",
+			titleField: "title"
+		}, options || {});
+
+		// build element
+		var els = [];
+		var valuesType = Object.isArray(options.values[0]) ? "array" : (typeof(options.values[0])=="object" ? "json" : "simple");
+		for (var i=0, len=options.values.length; i<len; ++i) {
+			if (valuesType == "object") {
+				values = $H(options.values[i]);
+				//id = options.values[i][options.idField];
+				//value = options.values[i][options.valueField];
+				value = values.get(valueField);
+				title = values.get(titleField);
+			} else if (valuesType == "array") {
+				value = options.values[i][0];
+				title = options.values[i][1];
+			} else {
+				value = title = options.values[i];
+			}
+			els.push(["option", Object.extend(value==options.value ? { selected: "1" } : {}, { value: value }), [title]]);
+		}
+		return ["select", { name: options.name, id: "f_"+options.name }, els];
 	},
 	
 	radio : function(options) {
@@ -130,7 +161,7 @@ SiForm.Elements = {
 			} else {
 				value = title = options.values[i];
 			}
-			els.push(["li", {}, [["input", { type: "radio", name: options.name, value: value, id: "f_"+options.name+"_"+value.underscore()}]]]);
+			els.push(["li", {}, [["input", Object.extend(value==options.value ? { checked: "1" } : {}, { type: "radio", name: options.name, value: value, id: "f_"+options.name+"_"+value.underscore()})]]]);
 			els.push(["li", {}, [["label", { for: "f_"+options.name+"_"+value.underscore()}, [title]]]]);
 		}
 		return ["ul", {}, els];

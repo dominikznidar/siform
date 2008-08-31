@@ -12,6 +12,8 @@
 		<div id="SiformSimple">simple test drop target</div>
 		
 		<script type="text/javascript">
+			var shortListOfCountries = [["SI", "Slovenia"], ["IT", "Italy"], ["DE", "Njemackoj"], ["CH", "Svajcarskoj"]];
+
 			document.observe("dom:loaded", function() {
 				var siformSimple = new SiForm($("SiformSimple"), {
 					displayType: "list",
@@ -44,6 +46,12 @@
 						title: "Your description",
 						name: "description",
 						value: "SMC?"
+					},{
+						type: "select",
+						title: "Country",
+						name: "country",
+						values: shortListOfCountries,
+						value: "SI"
 					}]
 				});
 			});
