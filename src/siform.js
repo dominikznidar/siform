@@ -17,7 +17,7 @@ var SiForm = Class.create({
 		}, this.options.formOptions);
 		if (!this.options.formOptions.id) this.options.formOptions.id = "siform_"+Math.round(Math.random()*100000);
 		this.element.update(this.buildForm());
-		
+		Event.observe(this.options.formOptions.id, 'submit', this.validateForm.bindAsEventListener(this));
 	},
 
 	// build form
@@ -34,8 +34,8 @@ var SiForm = Class.create({
 		return this.createElement("form", { 
 			action: this.options.formOptions.action,
 			method: this.options.formOptions.method,
-			id: this.options.formOptions.id,
-			onSubmit: "console.log($F('"+this.options.formOptions.id+"'))"
+			id: this.options.formOptions.id//,
+			//onSubmit: "console.log($F('"+this.options.formOptions.id+"'))"
 		}, [wrapper]);
 	},
 	
@@ -59,7 +59,7 @@ var SiForm = Class.create({
 	},
 	
 	getFormButtons: function() {
-		return [["ul", { className: 'buttons' }]];
+		return [["ul", { className: 'buttons' }, [["li", {}, [["input", { type: "submit" }]]]]]];
 	},
 	
 	labelElement: function(element, elementOptions) {
@@ -100,8 +100,20 @@ var SiForm = Class.create({
 	},
 	
 	// validate form
-	validateForm: function() {
-		console.log("test");
+	validateForm: function(e) {
+		var values = $(this.options.formOptions.id).serialize(true);
+		if (this.validations.length == 0) return true;
+		for (var i=0,len=this.validations.length; i<len; ++i) {
+			if (opts = SiForm.Validations[this.validations[i][1]]) {
+				re = new RegExp(opts.pattern);
+				if (!re.test(values[this.validations[i][0]])) {
+					console.log("validation failed!", this.validations[i]);
+				}
+			}
+		}
+
+		Event.stop(e);
+		return false;
 	},
 	
 	// add new validation
@@ -196,3 +208,14 @@ SiForm.Elements = {
 		return ["ul", {}, els];
 	}
 };
+
+SiForm.Validations = {
+	required: {
+		pattern: /(.+)/,
+		message: "This field is required!"
+	},
+	email: {
+		pattern: /(.+)/,
+		message: "This in not a valid e-mail address!"
+	}
+}
