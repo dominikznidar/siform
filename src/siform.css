@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+.sf-form {}
+.sf-form-element {
+	margin: 0px; padding: 2px 0px;
+}
+.sf-label {
+	display: block;
+	float: left;
+}
+.sf-textfield, .sf-textarea, .sf-select {
+	
+}

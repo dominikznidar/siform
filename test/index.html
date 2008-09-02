@@ -5,8 +5,13 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 		<title>SiForm tests</title>
+		<link href="style.css" rel="stylesheet" type="text/css" />
 		<script type="text/javascript" src="../lib/prototype.git.js"></script>
+		
+		<!-- SIFORM start -->
 		<script type="text/javascript" src="../src/siform.js"></script>
+		<link href="../src/siform.css" rel="stylesheet" type="text/css" />
+		<!-- SIFORM END -->
 	</head>
 	<body>
 		<div id="SiformSimple">simple test drop target</div>
@@ -18,6 +23,7 @@
 				var siformSimple = new SiForm($("SiformSimple"), {
 					displayType: "list",
 					info: "Info description",
+					width: 500,
 					buttons: ["save", { title:"back", onclick: "alert('go back was clicked'); return false;" } ],
 					formOptions: {
 						action: "#",
@@ -25,43 +31,43 @@
 					},
 					elements: [{
 						type: "textfield",
-						title: "First name",
+						title: "First name:",
 						name: "first_name",
 						validations: ["required"],
 						value: "Dominik"
 					}, {
 						type: "textfield",
-						title: "Last name",
+						title: "Last name:",
 						name: "last_name",
 						validations: ["required"],
 						value: "Znidar"
 					}, {
 						type: "textfield",
-						title: "E-mail",
+						title: "E-mail:",
 						name: "email",
 						validations: ["required","email"],
 						value: "test.address@email.com"
 					}, {
 						type: "radio",
-						title: "Gender",
+						title: "Gender:",
 						name: "gender",
 						value: "m",
 						values: [["f", "Female"], ["m", "Male"]]
 					}, {
 						type: "textarea",
-						title: "Your description",
+						title: "Your description:",
 						name: "description",
 						value: "SMC?"
 					},{
 						type: "select",
-						title: "Country",
+						title: "Country:",
 						name: "country",
 						values: shortListOfCountries,
 						value: "SI",
 						validations: ["required"]
 					},{
 						type: "checkbox",
-						title: "Interests",
+						title: "Interests:",
 						name: "interests",
 						values: ["sleeping", "working", "cycling", "schwimming"],
 						value: ["sleeping","schwimming"]
