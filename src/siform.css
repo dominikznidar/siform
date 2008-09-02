@@ -7,7 +7,9 @@
 .sf-label {
 	display: block;
 	float: left;
+	padding-top: 3px;
 }
-.sf-textfield, .sf-textarea, .sf-select {
-	
+.sf-textfield, .sf-textarea {
+	border: solid 1px #666;
+	padding: 2px;
 }
