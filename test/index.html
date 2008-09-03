@@ -48,6 +48,18 @@
 						validations: ["required","email"],
 						value: "test.address@email.com"
 					}, {
+						type: "textfield",
+						title: "Password:",
+						name: "password",
+						validations: ["required"],
+						isPassword: true
+					}, {
+						type: "textfield",
+						title: "Confirm password:",
+						name: "confirm_password",
+						validations: ["required", "sameAs-password"],
+						isPassword: true
+					}, {
 						type: "radio",
 						title: "Gender:",
 						name: "gender",

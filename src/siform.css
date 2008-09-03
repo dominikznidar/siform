@@ -13,3 +13,4 @@
 	border: solid 1px #666;
 	padding: 2px;
 }
+.sf-val-error { border-color: #C33; background-color: #FEE; }

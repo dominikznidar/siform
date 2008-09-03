@@ -22,7 +22,7 @@ var SiForm = Class.create({
 		if (this.options.displayType == "list") {
 			mw = SiForm.Tools.fixWidth(".sf-label", 5);
 			SiForm.Tools.setStyle(".sf-input-div, .sf-buttons", { paddingLeft: mw+"px" });
-			SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" select, #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });
+			SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select, #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });
 		}
 		Event.observe(this.options.formOptions.id, 'submit', this.validateForm.bindAsEventListener(this));
 	},
@@ -111,13 +111,23 @@ var SiForm = Class.create({
 		var values = $(this.options.formOptions.id).serialize(true), foundError = false;
 		if (this.validations.length == 0) return true;
 		for (var i=0,len=this.validations.length; i<len; ++i) {
-			if (opts = SiForm.Validations[this.validations[i][1]]) {
-				re = new RegExp(opts.pattern);
-				if (!re.test(values[this.validations[i][0]])) {
-					$("f_"+this.validations[i][0]).addClassName("val-error");
+			valArr = this.validations[i][1].split("-");
+			validation = valArr.shift();
+			valParams = valArr;
+			if (opts = SiForm.Validations[validation]) {
+				// validate
+				if (opts.callback) {
+					passed = opts.callback(this, values, valParams, this.validations[i]);
+				} else {
+					re = new RegExp(opts.pattern);
+					passed = re.test(values[this.validations[i][0]]);
+				}
+				// do stuff
+				if (!passed) {
+					$("f_"+this.validations[i][0]).addClassName("sf-val-error");
 					foundErrors = true
 				} else {
-					$("f_"+this.validations[i][0]).removeClassName("val-error");
+					$("f_"+this.validations[i][0]).removeClassName("sf-val-error");
 				}
 			}
 		}
@@ -142,10 +152,20 @@ SiForm.Elements = {
 		options = Object.extend({
 			name: '',
 			value: '',
+			isPassword: false
 		}, options || {});
 
+		// set properties
+		properties = {
+			type: options.isPassword ? "password" : "text",
+			name: options.name,
+			value: options.value,
+			id: 'f_'+options.name,
+			className:"sf-textfield"
+		};
+
 		// build element
-		return ['input', { type: "text", name: options.name, value: options.value, id: 'f_'+options.name, className:"sf-textfield" }];
+		return ['input', properties];
 	},
 	
 	textarea: function(options) {
@@ -253,6 +273,13 @@ SiForm.Validations = {
 	email: {
 		pattern: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
 		message: "This in not a valid e-mail address!"
+	},
+	sameAs: {
+		callback: function(sfObj, values, valParams, valCommand) {
+			var field1 = $("f_"+valParams[0]).value, field2 = $("f_"+valCommand[0]).value;
+			return field1 == field2;
+		},
+		message: "Values don't match!"
 	}
 }
 
