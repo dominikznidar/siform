@@ -22,7 +22,8 @@ var SiForm = Class.create({
 		if (this.options.displayType == "list") {
 			mw = SiForm.Tools.fixWidth(".sf-label", 5);
 			SiForm.Tools.setStyle(".sf-input-div, .sf-buttons", { paddingLeft: mw+"px" });
-			SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select, #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });
+			SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select[class!='sf-no-fit'], #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });
+			$$("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select[class!='sf-no-fit'], #"+this.formId+" textarea").each(function(el) { el.observe("mouseover", function(event) { console.log(event); } ); } );
 		}
 		Event.observe(this.options.formOptions.id, 'submit', this.validateForm.bindAsEventListener(this));
 	},
@@ -262,6 +263,32 @@ SiForm.Elements = {
 			els.push(["div", { className: "sf-sub-element" }, [label, checkel]]);
 		}
 		return ["div", { className: " sf-checkboxes" }, els];
+	},
+	
+	dateselect: function(options) {
+		var d = new Date();
+		options = Object.extend({
+			name: "",
+			value: "",
+			monthDisplay: "string",
+			startYear: d.getYear()+1800,
+			endYear: d.getYear()+1900,
+			includeTime: false
+		}, options || {});
+		daysOptions = SiForm.Tools.enumerableToOptions($R(1,31), 3);
+		var selectedMonth = 3;
+		if (options.monthDisplay=="string") monthOptions = SiForm.Tools.enumerableToOptions($A(SiForm.Locale.months), 3, function(el, key) { return ["option", Object.extend(selectedMonth==(key+1)?{ selected:"1" }:{},{ value: key+1 }), [el]]; });
+		else monthOptions = SiForm.Tools.enumerableToOptions($R(1,12),3);
+		yearOptions = SiForm.Tools.enumerableToOptions($R(options.startYear, options.endYear), 1983);
+		c = ["div", { className: "sf-dateselect" }, [
+			["select", { name: options.name+"_day", id: "f_"+options.name+"_day", className: "sf-no-fit" }, daysOptions],
+			["select", { name: options.name+"_month", id: "f_"+options.name+"_month", className: "sf-no-fit" }, monthOptions],
+			["select", { name: options.name+"_year", id: "f_"+options.name+"_year", className: "sf-no-fit" }, yearOptions]
+		]];
+		if (options.includeTime) {
+			c[2].push(["input", { name: options.name+"_year", id: "f_"+options.name+"_year", className: "sf-no-fit sf-textfield", value: "00:00", size: 5, style: "margin-left: 5px;" }, []]);
+		}
+		return c;
 	}
 };
 
@@ -294,5 +321,14 @@ SiForm.Tools = {
 	setStyle: function(selector,styles) {
 		var setStyleStyles = styles;
 		$$(selector).each(function(el) { el.setStyle(setStyleStyles); });
+	},
+	enumerableToOptions: function(enum, selected, callback) {
+		var enToOpts_selected = selected;
+		if (!callback) callback = function(el) { return ["option", Object.extend(enToOpts_selected==el?{ selected: "1" }:{},{ value: el }), [el.toString()]] };
+		return enum.collect(callback);
 	}
 };
+
+SiForm.Locale = {
+	months: $w("January February March April May June July August September October November December"),
+}
