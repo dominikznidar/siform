@@ -1,5 +1,7 @@
 var SiForm = Class.create({
 	validations: [],
+	errorTips: [],
+	tips: [],
 
 	// initialize SiForm
 	initialize: function(element, options) {
@@ -24,9 +26,13 @@ var SiForm = Class.create({
 			SiForm.Tools.setStyle(".sf-input-div, .sf-buttons", { paddingLeft: mw+"px" });
 			SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select[class!='sf-no-fit'], #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });
 		}
+
 		// create observers for tooltips
 		labels = $$("#"+this.formId+" .sf-label");
-		for (var i=0, len = labels.length; i<len; ++i) console.log(i);
+		for (var i=0, len = labels.length; i<len; ++i) {
+			Event.observe(labels[i].identify(), "mouseover", this.showTip.bindAsEventListener(this));
+			Event.observe(labels[i].identify(), "mouseout", this.hideTip.bindAsEventListener(this));
+		}
 		Event.observe(this.options.formOptions.id, 'submit', this.validateForm.bindAsEventListener(this));
 	},
 
@@ -140,6 +146,22 @@ var SiForm = Class.create({
 	// add new validation
 	addValidation: function(field, validation) {
 		this.validations.push([field, validation]);
+	},
+	
+	showTip: function(event) {
+		console.log("show tip");
+	},
+	
+	hideTip: function(event) {
+		console.log("hide tip");
+	},
+	
+	addTip: function(element, msg) {
+		//
+	},
+	
+	clearTips: function() {
+		//
 	},
 
 	// throw error
