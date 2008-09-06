@@ -23,8 +23,10 @@ var SiForm = Class.create({
 			mw = SiForm.Tools.fixWidth(".sf-label", 5);
 			SiForm.Tools.setStyle(".sf-input-div, .sf-buttons", { paddingLeft: mw+"px" });
 			SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select[class!='sf-no-fit'], #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });
-			$$("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select[class!='sf-no-fit'], #"+this.formId+" textarea").each(function(el) { el.observe("mouseover", function(event) { console.log(event); } ); } );
 		}
+		// create observers for tooltips
+		labels = $$("#"+this.formId+" .sf-label");
+		for (var i=0, len = labels.length; i<len; ++i) console.log(i);
 		Event.observe(this.options.formOptions.id, 'submit', this.validateForm.bindAsEventListener(this));
 	},
 
