@@ -1,16 +1,11 @@
 @CHARSET "UTF-8";
 
 .sf-form {}
-.sf-form-element {
-	margin: 0px; padding: 2px 0px;
-}
-.sf-label {
-	display: block;
-	float: left;
-	padding-top: 3px;
-}
-.sf-textfield, .sf-textarea {
-	border: solid 1px #666;
-	padding: 2px;
-}
+.sf-form-element { margin: 0px; padding: 2px 0px; }
+.sf-label { display: block; float: left; padding-top: 3px; }
+.sf-textfield, .sf-textarea { border: solid 1px #666; padding: 2px; }
 .sf-val-error { border-color: #C33; background-color: #FEE; }
+label.sf-val-error { border: none; background: none; }
+label.sf-val-error span { border-bottom: dashed 1px #C33; color: #C33; }
+.sf-tooltip { position: absolute; display: block; background: #FEE; border: solid 3px #C33; padding: 2px 7px; zindex: 1000; margin: 5px 5px 0 0; }
+.sf-tooltip P { margin: 5px 0px; padding: 0; color: #C33; }

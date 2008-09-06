@@ -11,7 +11,8 @@ var SiForm = Class.create({
 			formOptions: {},
 			info: "",
 			buttons: [],
-			elements: []
+			elements: [],
+			minTooltipWidth: 150
 		}, options || {});
 		this.options.formOptions = Object.extend({
 			id: "",
@@ -29,6 +30,10 @@ var SiForm = Class.create({
 
 		// fill some dummy error tips
 		//
+		// create tooltip element
+		this.tooltipId = "sf-tooltip-"+this.formId;
+		this.tooltip = new Element("div", { id: this.tooltipId, className: "sf-tooltip", style: "display:none;" });
+		$$("body")[0].appendChild(this.tooltip);
 		// create observers for tooltips
 		labels = $$("#"+this.formId+" .sf-label");
 		for (var i=0, len = labels.length; i<len; ++i) {
@@ -81,7 +86,7 @@ var SiForm = Class.create({
 	},
 
 	labelElement: function(element, elementOptions) {
-		label = ["label", { htmlFor: "f_"+elementOptions.name, className: "sf-label", id: "label_"+elementOptions.name }, [elementOptions.title]];
+		label = ["label", { htmlFor: "f_"+elementOptions.name, className: "sf-label", id: "label_"+elementOptions.name }, [["span", {}, [elementOptions.title]]]];
 		if (this.options.displayType == "table") {
 			return ["tr", {}, [
 				["td", { className: "sf-label-cell" }, [label]],
@@ -132,23 +137,24 @@ var SiForm = Class.create({
 					passed = opts.callback(this, values, valParams, this.validations[i]);
 				} else {
 					re = new RegExp(opts.pattern);
-					passed = re.test(values[this.validations[i][0]]);
+					passed = re.test(values[this.validations[i][0]] || "");
 				}
 				// do stuff
 				if (!passed) {
 					// add classes to elements
-					$("f_"+this.validations[i][0]).addClassName("sf-val-error");
-					$("label_"+this.validations[i][0]).addClassName("sf-val-error");
+					if (a=$("f_"+this.validations[i][0])) a.addClassName("sf-val-error");
+					if (a=$("label_"+this.validations[i][0])) a.addClassName("sf-val-error");
 					// add error message to errorTips[]
 					this.addTip(this.validations[i][0], opts.message);
 					foundErrors = true
 				} else {
-					$("f_"+this.validations[i][0]).removeClassName("sf-val-error");
-					$("label_"+this.validations[i][0]).removeClassName("sf-val-error");
+					if (!this.getTip(this.validations[i][0])) {
+						if (a=$("f_"+this.validations[i][0])) a.removeClassName("sf-val-error");
+						if (a=$("label_"+this.validations[i][0])) a.removeClassName("sf-val-error");
+					}
 				}
 			}
 		}
-		console.log(this.errorTips);
 		if (foundErrors) Event.stop(e);
 	},
 
@@ -158,16 +164,32 @@ var SiForm = Class.create({
 	},
 	
 	showTip: function(event) {
-		console.log("show tip");
+		Event.stop(event);
+		// skip if tooltip is visible
+		if (this.tooltip.visible()) return false;
+		if (event.target.tagName.toLowerCase() != "span") return false;
+		elId = event.currentTarget.id.replace(/^label_/, "");
+		tips = this.errorTips[elId];
+		cTarget = $(event.currentTarget);
+		// check if tooltips are to be shown, if not exit
+		if (!tips || !Object.isArray(tips)) return false;
+		// fill tooltip and show it
+		this.tooltip.update("<p>"+tips.join("</p><p>")+"</p>").show();
+		// position it
+		this.tooltip.setStyle({ left: event.pointerX()+"px", top: (cTarget.cumulativeOffset()[1] + cTarget.getHeight())+"px" });
 	},
 	
 	hideTip: function(event) {
-		console.log("hide tip");
+		this.tooltip.hide();
 	},
 	
 	addTip: function(element, msg) {
 		if (!Object.isArray(this.errorTips[element])) this.errorTips[element] = [];
 		this.errorTips[element].push(msg);
+	},
+	
+	getTip: function(element) {
+		return this.errorTips[element];
 	},
 	
 	clearTips: function() {
