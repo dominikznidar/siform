@@ -1,7 +1,7 @@
 var SiForm = Class.create({
 	validations: [],
-	errorTips: [],
-	tips: [],
+	errorTips: {},
+	tips: {},
 
 	// initialize SiForm
 	initialize: function(element, options) {
@@ -27,6 +27,8 @@ var SiForm = Class.create({
 			SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select[class!='sf-no-fit'], #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });
 		}
 
+		// fill some dummy error tips
+		//
 		// create observers for tooltips
 		labels = $$("#"+this.formId+" .sf-label");
 		for (var i=0, len = labels.length; i<len; ++i) {
@@ -79,7 +81,7 @@ var SiForm = Class.create({
 	},
 
 	labelElement: function(element, elementOptions) {
-		label = ["label", { htmlFor: "f_"+elementOptions.name, className: "sf-label" }, [elementOptions.title]];
+		label = ["label", { htmlFor: "f_"+elementOptions.name, className: "sf-label", id: "label_"+elementOptions.name }, [elementOptions.title]];
 		if (this.options.displayType == "table") {
 			return ["tr", {}, [
 				["td", { className: "sf-label-cell" }, [label]],
@@ -119,6 +121,7 @@ var SiForm = Class.create({
 	validateForm: function(e) {
 		var values = $(this.options.formOptions.id).serialize(true), foundError = false;
 		if (this.validations.length == 0) return true;
+		this.clearTips();
 		for (var i=0,len=this.validations.length; i<len; ++i) {
 			valArr = this.validations[i][1].split("-");
 			validation = valArr.shift();
@@ -133,13 +136,19 @@ var SiForm = Class.create({
 				}
 				// do stuff
 				if (!passed) {
+					// add classes to elements
 					$("f_"+this.validations[i][0]).addClassName("sf-val-error");
+					$("label_"+this.validations[i][0]).addClassName("sf-val-error");
+					// add error message to errorTips[]
+					this.addTip(this.validations[i][0], opts.message);
 					foundErrors = true
 				} else {
 					$("f_"+this.validations[i][0]).removeClassName("sf-val-error");
+					$("label_"+this.validations[i][0]).removeClassName("sf-val-error");
 				}
 			}
 		}
+		console.log(this.errorTips);
 		if (foundErrors) Event.stop(e);
 	},
 
@@ -157,11 +166,12 @@ var SiForm = Class.create({
 	},
 	
 	addTip: function(element, msg) {
-		//
+		if (!Object.isArray(this.errorTips[element])) this.errorTips[element] = [];
+		this.errorTips[element].push(msg);
 	},
 	
 	clearTips: function() {
-		//
+		this.errorTips = {};
 	},
 
 	// throw error
