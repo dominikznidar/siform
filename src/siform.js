@@ -24,7 +24,7 @@ var SiForm = Class.create({
 		this.element.update(this.buildForm());
 		if (this.options.displayType == "list") {
 			mw = SiForm.Tools.fixWidth(".sf-label", 5);
-			SiForm.Tools.setStyle(".sf-input-div, .sf-buttons", { paddingLeft: mw+"px" });
+			SiForm.Tools.setStyle(".sf-input-div, .sf-buttons", { paddingLeft: (mw+17)+"px" });
 			SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select[class!='sf-no-fit'], #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });
 		}
 
