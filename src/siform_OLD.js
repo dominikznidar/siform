@@ -54,7 +54,7 @@ var SiForm = Class.create({
 		} else {
 			wrapper = ["div", { className: "sf-form-content" }, [].concat(formElements, formButtons)];
 		}
-		return this.createElement("form", { 
+		return this.createElement("form", {
 			action: this.options.formOptions.action,
 			method: this.options.formOptions.method,
 			id: this.options.formOptions.id,
@@ -162,7 +162,7 @@ var SiForm = Class.create({
 	addValidation: function(field, validation) {
 		this.validations.push([field, validation]);
 	},
-	
+
 	showTip: function(event) {
 		Event.stop(event);
 		// skip if tooltip is visible
@@ -178,20 +178,20 @@ var SiForm = Class.create({
 		// position it
 		this.tooltip.setStyle({ left: event.pointerX()+"px", top: (cTarget.cumulativeOffset()[1] + cTarget.getHeight())+"px" });
 	},
-	
+
 	hideTip: function(event) {
 		this.tooltip.hide();
 	},
-	
+
 	addTip: function(element, msg) {
 		if (!Object.isArray(this.errorTips[element])) this.errorTips[element] = [];
 		this.errorTips[element].push(msg);
 	},
-	
+
 	getTip: function(element) {
 		return this.errorTips[element];
 	},
-	
+
 	clearTips: function() {
 		this.errorTips = {};
 	},
@@ -224,7 +224,7 @@ SiForm.Elements = {
 		// build element
 		return ['input', properties];
 	},
-	
+
 	textarea: function(options) {
 		// set default options
 		options = Object.extend({
@@ -232,11 +232,11 @@ SiForm.Elements = {
 			value: "",
 			rows: "3"
 		}, options || {});
-		
+
 		// build element
 		return ["textarea", { name: options.name, id: "f_"+options.name, rows: options.rows, className:"sf-textarea" }, [options.value]];
 	},
-	
+
 	select: function(options) {
 		// set default options
 		options = Object.extend({
@@ -267,7 +267,7 @@ SiForm.Elements = {
 		}
 		return ["select", Object.extend(options.multiple ? { multiple: "1", size: options.size } : {}, { name: options.name, id: "f_"+options.name, className: "sf-select" }), els];
 	},
-	
+
 	radio : function(options) {
 		// set default options
 		options = Object.extend({
@@ -293,7 +293,7 @@ SiForm.Elements = {
 		}
 		return ["div", { className: " sf-radios" }, els];
 	},
-	
+
 	checkbox : function(options) {
 		// set default options
 		options = Object.extend({
@@ -306,7 +306,7 @@ SiForm.Elements = {
 		// build element
 		var els = [];
 		if (!options.values.length) return "no values";
-		if (!Object.isArray(options.value)) options.value = [options.value]; 
+		if (!Object.isArray(options.value)) options.value = [options.value];
 		for (var i=0, len=options.values.length; i<len; ++i) {
 			if (Object.isArray(options.values[i])) {
 				value = options.values[i][0];
@@ -320,7 +320,7 @@ SiForm.Elements = {
 		}
 		return ["div", { className: " sf-checkboxes" }, els];
 	},
-	
+
 	dateselect: function(options) {
 		var d = new Date();
 		options = Object.extend({

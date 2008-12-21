@@ -1,11 +1,89 @@
 @CHARSET "UTF-8";
 
-.sf-form {}
-.sf-form-element { margin: 0px; padding: 2px 0px; }
-.sf-label { display: block; float: left; padding: 3px 17px 3px 0px; }
-.sf-textfield, .sf-textarea { border: solid 1px #666; padding: 2px; }
-.sf-val-error { border-color: #C33; background-color: #FEE; }
-label.sf-val-error { border: none; background: white url(images/bg_tiped.gif) no-repeat 0px 4px; padding-left: 17px; padding-right: 0px; }
-label.sf-val-error span { border-bottom: dashed 1px #C33; color: #C33; }
-.sf-tooltip { position: absolute; display: block; background: #FEE; border: solid 3px #C33; padding: 2px 7px; zindex: 1000; margin: 2px 2px 0 0; }
-.sf-tooltip P { margin: 5px 0px; padding: 0; color: #C33; }
+.sf-form-element, .sf-group-element, .sf-tab-element {
+	padding: 3px 0; line-height: 15px;
+}
+
+.sf-label {
+	display: block; float: left; clear: left; padding: 3px 17px 3px 0px; color: #374569;
+}
+label.sf-val-error {
+	border: none; background: white url(images/bg_tiped.gif) no-repeat 0px 4px;
+	padding-left: 17px; padding-right: 0px;
+}
+label.sf-val-error span {
+	border-bottom: dashed 1px #C33; color: #C33;
+}
+
+.sf-textfield, .sf-textarea, sf-select {
+	background: #F7F7F7; border: solid 1px; border-color: #999999 #AAB3B3 #D5DDDD; padding: 3px; line-height: 15px;
+}
+.sf-checkboxes, .sf-radios {
+	float: left;
+}
+.sf-val-error {
+	border-color: #C33; background-color: #FEE;
+}
+
+.sf-tooltip {
+	position: absolute; display: block; background: #FEE; border: solid 3px #C33; padding: 2px 7px; margin: 2px 2px 0 0;
+}
+.sf-tooltip P {
+	margin: 5px 0px; padding: 0; color: #C33;
+}
+
+.sf-sub-element {
+	padding-bottom: 2px;
+}
+.sf-sub-element label, .sf-sub-element input {
+	float: left;
+}
+.sf-sub-element label {
+	padding-top: 2px;
+}
+
+.sf-group {
+	margin:0; padding:0; border:none; border-top: solid 2px #19ABCE; margin-bottom: 1em;
+}
+.sf-group-title {
+	padding: 5px; background-color: #19ABCE; color: white; border-right: solid 3px white; font-size: 11px; line-height: 12px; text-transform: uppercase;
+}
+.sf-group-content {
+	padding-top: 5px;
+}
+.sf-group-collapsible .sf-group-title {
+	padding-left: 19px; background: #19ABCE url(images/sf-group-close.gif) no-repeat 5px 6px; cursor: pointer;
+}
+.sf-group-collapsed .sf-group-title {
+	background-image: url(images/sf-group-open.gif);
+}
+.sf-group-collapsed .sf-group-content {
+	display: none;
+}
+
+.sf-tabs-container {
+	margin-bottom: 1em;
+}
+.sf-tabs, .sf-tab {
+	list-style:none; margin:0; padding:0;
+}
+.sf-tabs {
+	border-bottom: solid 2px #19ABCE; margin-bottom: 5px; clear: both;
+}
+.sf-tab {
+	padding: 5px; background-color: #8dd5e7; color: white; font-size: 11px; line-height: 12px; text-transform: uppercase; float:left; margin-right: 3px; cursor: pointer;
+}
+.sf-tab-active {
+	background-color: #19ABCE;
+}
+
+.sf-buttons-bar {
+	background: #19ABCE; padding: 5px 0;
+}
+.sf-buttons-bar button {
+	width: auto; background: white; font-size: 10px; line-height: 12px; text-transform: uppercase; border: none; padding: 3px 10px; margin-right: 5px; color: #374569;
+}
+
+.sf-cf {
+	clear: both;
+}

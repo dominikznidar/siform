@@ -7,92 +7,145 @@
 		<title>SiForm tests</title>
 		<link href="style.css" rel="stylesheet" type="text/css" />
 		<script type="text/javascript" src="../lib/prototype.git.js"></script>
-		
+		<script type="text/javascript" src="../lib/builder.git.js"></script>
+
 		<!-- SIFORM start -->
 		<script type="text/javascript" src="../src/siform.js"></script>
 		<link href="../src/siform.css" rel="stylesheet" type="text/css" />
 		<!-- SIFORM END -->
 	</head>
 	<body>
-		<div id="SiformSimple">simple test drop target</div>
-		
+
+		<h1>Siform test rendering</h1>
+
+		<div id="SiformSimple">siform target element</div>
+
 		<script type="text/javascript">
-			var shortListOfCountries = [["SI", "Slovenia"], ["IT", "Italy"], ["DE", "Njemackoj"], ["CH", "Svajcarskoj"]];
+			var shortListOfCountries = [["SI", "Slovenia"], ["IT", "Italy"], ["DE", "Njemackoj"], ["CH", "Svajcarskoj"], ['SE', 'Swedener']];
 
 			document.observe("dom:loaded", function() {
 				var siformSimple = new SiForm($("SiformSimple"), {
-					displayType: "list",
-					info: "Info description",
-					width: 500,
-					buttons: ["save", { title:"back", onclick: "alert('go back was clicked'); return false;" } ],
-					formOptions: {
-						action: "#",
-						method: "post"
-					},
+					width: 445,
 					elements: [{
-						type: "textfield",
-						title: "First name:",
-						name: "first_name",
-						validations: ["required"],
-						value: "Dominik"
-					}, {
-						type: "textfield",
-						title: "Last name:",
-						name: "last_name",
-						validations: ["required"],
-						value: "Znidar"
-					}, {
-						type: "textfield",
-						title: "E-mail:",
-						name: "email",
-						validations: ["required","email"],
-						value: "test.address@email.com"
-					}, {
-						type: "textfield",
-						title: "Password:",
-						name: "password",
-						validations: ["required"],
-						isPassword: true
-					}, {
-						type: "textfield",
-						title: "Confirm password:",
-						name: "confirm_password",
-						validations: ["required", "sameAs-password"],
-						isPassword: true
-					}, {
-						type: "radio",
-						title: "Gender:",
-						name: "gender",
-						value: "m",
-						values: [["f", "Female"], ["m", "Male"]]
-					}, {
-						type: "dateselect",
-						title: "Birthday:",
-						name: "birthday",
-						value: "1983-05-21"
-					}, {
-						type: "textarea",
-						title: "Describe yourself:",
-						name: "description",
-						value: "SMC?"
-					},{
-						type: "select",
-						title: "Country:",
-						name: "country",
-						values: shortListOfCountries,
-						value: "SI",
-						validations: ["required"]
-					},{
-						type: "checkbox",
-						title: "Interests:",
-						name: "interests",
-						values: ["sleeping", "working", "cycling", "schwimming"],
-						value: ["sleeping","schwimming"],
-						validations: ["required"]
+						type: 'form',
+						action: '#',
+						onsubmit: function() { alert('test'); },
+						elementOptions: {
+							width: 250,
+							labelWidth: 160
+						},
+						elements: [{
+							type: 'group',
+							title: 'Required / system info',
+							collapsible: false,
+							elementOptions: { customLabelStyle: 'margin-left: 5px;' },
+							elements: [{
+								type: 'textfield',
+								name: 'first_name',
+								label: 'First name:',
+								validations: ['required'],
+								value: 'Dominik'
+							}, {
+								type: "textfield",
+								label: "Last name:",
+								name: "last_name",
+								validations: ["required"],
+								value: "Znidar"
+							}, {
+								type: "textfield",
+								label: "E-mail:",
+								name: "email",
+								validations: ["required","email"],
+								value: "test.address@email.com"
+							}, {
+								type: "textfield",
+								label: "Password:",
+								name: "password",
+								validations: ["required"],
+								isPassword: true
+							}, {
+								type: "textfield",
+								label: "Confirm password:",
+								name: "confirm_password",
+								validations: ["required", "sameAs-password"],
+								isPassword: true
+							}]
+						}, {
+							type: 'group',
+							title: 'Additional / personal info',
+							collapsible: true,
+							collapsed: true,
+							elements: [{
+								type: "radio",
+								label: "Gender:",
+								name: "gender",
+								value: "m",
+								values: [["f", "Female"], ["m", "Male"]]
+							}, {
+								type: "dateselect",
+								label: "Birthday:",
+								name: "birthday",
+								value: "1983-05-21"
+							}, {
+								type: "select",
+								label: "Country:",
+								name: "country",
+								values: shortListOfCountries,
+								value: "SI",
+								validations: ["required"]
+							}, {
+								type: "textarea",
+								label: "Describe yourself:",
+								name: "description",
+								value: "SMC?"
+							}, {
+								type: "checkbox",
+								label: "Interests:",
+								name: "interests",
+								values: ["sleeping", "working", "cycling", "schwimming"],
+								value: ["sleeping","schwimming"],
+								validations: ["required"]
+							}]
+						}, {
+							type: 'tabs',
+							tabs: [{
+								title: 'First tab',
+								elements: [{
+									type: 'textfield',
+									label: 'Text in tab 1:',
+									value: 'tab 1'
+								}]
+							},{
+								title: 'Second tab',
+								elements: [{
+									type: 'textfield',
+									label: 'Text in tab 2:',
+									value: 'tab 2'
+								},{
+									type: 'textfield',
+									label: 'Text 2 in tab 2:',
+									value: 'tab 2 / 2'
+								}]
+							}]
+						}],
+						buttons: {
+							customLabelStyle: 'margin-left: 5px;',
+							elements: [{
+								type: 'submit',
+								title: 'Save data'
+							}, {
+								type: 'reset',
+								title: 'Reset'
+							}, {
+								type: 'url',
+								url: '#',
+								title: 'Go back'
+							}]
+						}
 					}]
 				});
 			});
 		</script>
-		
+
 	</body>
 </html>
