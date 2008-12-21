@@ -1,0 +1,12 @@
+= SiForm
+=== Form building simplified
+
+SiForm is javascript tool that enables developer to create unified forms in
+application.
+
+== Requirements
+SiForm depends on two libraries:
+* prototype
+* scriptaculous / builder
+
+both are included in libs folder.
