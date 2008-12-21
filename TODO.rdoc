@@ -1,0 +1,18 @@
+=TODO list
+
+* consistency in elements
+
+* cross browser compatibility (ie6+)
+
+* add more validations
+** min/maxLength
+** min/maxSelected
+** min/maxValue
+** validIP
+
+* add more elements
+** upload (basic / inline)
+** ?datepicker
+** complex element example
+
+* create a subsite for links to sites using siform :)
