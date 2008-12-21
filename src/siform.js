@@ -162,8 +162,8 @@ SiForm.Elements = {
 			label: true,
 			elements: []
 		}, options || {});
-		if (!options.elements) options.elements = [{ type: 'submit', title: 'submit' }];
-		if (!Object.isArray(options.elements)) options.elements = [options.elements];
+		if (!Object.isArray(options.elements)) options.elements = [];
+		if (options.elements.length == 0) options.elements = [{ type: 'button', buttonType: 'submit', title: 'Save' }];
 
 		var bar = Builder.node('div', { className: 'sf-buttons-bar' });
 		var buttons = Builder.node('div', { className: 'sf-buttons' });
@@ -570,6 +570,7 @@ SiForm.Tools = {
 					}
 
 					if (!passed) {
+						foundErrors = true;
 						if (el = $('f_'+opts.name)) el.addError(elValidations[j], vOpts.message);
 					} else {
 						if (el = $('f_'+opts.name)) el.removeError(elValidations[j]);
@@ -579,7 +580,8 @@ SiForm.Tools = {
 			}
 
 		}
-		event.stop();
+
+		if (foundErrors) event.stop();
 	},
 
 	showTooltip: function(e) {

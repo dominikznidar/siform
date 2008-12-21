@@ -98,11 +98,12 @@ fieldset.sf-val-error .sf-group-title {
 
 
 .sf-buttons-bar {
-	background: #19ABCE; padding: 5px 0;
+	background: #19ABCE; padding: 5px 0; margin-top: 3px;
 }
 .sf-buttons-bar button {
 	width: auto; background: white; font-size: 10px; line-height: 12px; text-transform: uppercase; border: none; padding: 3px 10px; margin-right: 5px; color: #374569;
 }
+
 
 .sf-cf {
 	clear: both;
