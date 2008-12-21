@@ -13,8 +13,9 @@ both are included in libs folder.
 
 == Usage
 First we need call js and css file in head tag:
-<script type="text/javascript" src="src/siform.js"></script>
-<link rel="stylesheet" type="text/css" href="src/siform.css" />
+
+  <script type="text/javascript" src="src/siform.js"></script>
+  <link rel="stylesheet" type="text/css" href="src/siform.css" />
 
 Than we add a div inside body, where siform will put its content and javascript
 code that will create siform:
@@ -51,3 +52,6 @@ code that will create siform:
   </script>
 
 That's it.
+
+== Documentation
+For now, please try to make sense from file: tests/index.html
