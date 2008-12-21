@@ -19,17 +19,8 @@ var SiForm = Class.create({
 		this.element.update('').setStyle({ width: this.options.width+'px' });
 		this.buildElements(this.options.elements, this.element);
 
-		//Event.observe(window, 'load', SiForm.Tools.setFormSubmiters.bind(this));
-		for (var i=0,len=this.forms.length; i<len; i++) {
-			Event.observe($(this.forms[i].id), 'submit', this.validateForm.bindAsEventListener(this));
-		}
-
-		/*
-		// move buttons to the right
-		SiForm.Tools.setStyle(".sf-buttons", { paddingLeft: (mw+17)+"px" });
-		// set same width to all form elements
-		SiForm.Tools.setStyle("#"+this.formId+" input[type='text'], #"+this.formId+" input[type='password'], #"+this.formId+" select[class!='sf-no-fit'], #"+this.formId+" textarea", { width: (this.options.width - mw - 10)+"px" });*/
-
+		// create tooltip
+		$$('body')[0].insert(Builder.node('div', { className: 'sf-tooltip', id: 'sf-tooltip', style: 'display:none;' }));
 	},
 
 	/**
@@ -52,6 +43,12 @@ var SiForm = Class.create({
 
 			var el = elMethod(elOpts);
 			if (!el) continue;
+			el.sfOptions = elOpts;
+
+			if (elOpts.validations) {
+				this.validations.push(elOpts);
+			}
+
 			labelCallback = SiForm.Elements.label.bind(this);
 			el = labelCallback(el, elOpts);
 			wrapper.appendChild(this.wrapElement(el, doWrapWith));
@@ -118,10 +115,11 @@ SiForm.Elements = {
 		};
 
 		var el = Builder.node('form', formTagOpts);
+		el.formOptions = options;
 
 		// set validator check
 		//Event.observe($(el), 'submit', SiForm.Tools.formValidator.bind(this));
-		//$(el).observe('submit', SiForm.Tools.formValidator.bind(this));
+		Event.observe($(el), 'submit', SiForm.Tools.formValidator.bindAsEventListener(this, el));
 
 		// build elements
 		passedOptions = Object.extend({ prevElementOptions: Object.clone(options.elementOptions) }, options.elementOptions || {});
@@ -170,9 +168,7 @@ SiForm.Elements = {
 		var bar = Builder.node('div', { className: 'sf-buttons-bar' });
 		var buttons = Builder.node('div', { className: 'sf-buttons' });
 
-		for (var i=0, len=options.elements.length; i<len; i++) {
-			buttons.appendChild(SiForm.Elements.button(options.elements[i]));
-		}
+		this.buildElements(options.elements, buttons);
 
 		labelCallback = SiForm.Elements.label.bind(this);
 		bar.appendChild(labelCallback(buttons, options));
@@ -194,8 +190,6 @@ SiForm.Elements = {
 			className: 'sf-button' + (options.customClass ? ' '+options.customClass : ''),
 			style: options.customStyle
 		}, options.title);
-
-		btn.options = options;
 
 		$(btn).observe('click', SiForm.Tools.buttonCallback);
 
@@ -309,7 +303,7 @@ SiForm.Elements = {
 		}, options || {});
 
 		// build element
-		var el = Builder.node("div", { className: " sf-radios" }), els = [];
+		var el = Builder.node("div", { className: " sf-radios", id: 'f_'+options.name }), els = [];
 
 		if (!options.values.length) return "no values";
 		for (var i=0, len=options.values.length; i<len; ++i) {
@@ -339,7 +333,7 @@ SiForm.Elements = {
 		}, options || {});
 
 		// build element
-		var el = Builder.node("div", { className: " sf-checkboxes" });
+		var el = Builder.node("div", { className: " sf-checkboxes", id: 'f_'+options.name });
 
 		if (!options.values.length) return "no values";
 		if (!Object.isArray(options.value)) options.value = [options.value];
@@ -425,7 +419,7 @@ SiForm.Elements = {
 		});
 		var legend = Builder.node('legend', {
 			className: 'sf-group-title' + (options.customTitleClass ? " "+options.customTitleClass : "")
-		}, options.title);
+		}, [Builder.node('span', options.title)]);
 		var fsContent = Builder.node('div', { className: 'sf-group-content' });
 
 		if (options.collapsible) {
@@ -438,7 +432,7 @@ SiForm.Elements = {
 		}
 
 		fs.appendChild(legend);
-		passedOptions = Object.extend({ prevElementOptions: Object.clone(options.elementOptions) }, options.elementOptions || {});
+		passedOptions = Object.extend({ prevElementOptions: Object.clone(options.elementOptions), groupNode: fs }, options.elementOptions || {});
 		this.buildElements(options.elements, fsContent, 'group-element', passedOptions);
 		fs.appendChild(fsContent);
 
@@ -480,8 +474,8 @@ SiForm.Elements = {
 		// create tab contents
 		for (var i=0,len=options.tabs.length; i<len; i++) {
 			var tabcontent = Builder.node('div', { className: 'sf-tab-content' });
-			passedOptions = Object.extend({ prevElementOptions: Object.clone(options.elementOptions) }, options.elementOptions || {});
-			this.buildElements(options.tabs[i].elements, tabcontent, 'tab-element', passedOptions);
+			passedOptions = Object.extend({ prevElementOptions: Object.clone(options.elementOptions), tabTitle: tabsel.tabtitles[i] }, options.elementOptions || {});
+			this.buildElements(options.tabs[i].elements, tabcontent, 'tab-element', Object.extend(passedOptions));
 			tabsel.tabcontents.push(tabcontent);
 			tabsco.appendChild(tabcontent);
 		}
@@ -516,7 +510,7 @@ SiForm.Validations = {
 	},
 	sameAs: {
 		callback: function(sfObj, values, valParams, valCommand) {
-			var field1 = $("f_"+valParams[0]).value, field2 = $("f_"+valCommand[0]).value;
+			var field1 = $("f_"+valParams[0]).value, field2 = $("f_"+valCommand['name']).value;
 			return field1 == field2;
 		},
 		message: "Values don't match!"
@@ -541,30 +535,71 @@ SiForm.Tools = {
 		return enumerabl.collect(callbeck);
 	},
 	buttonCallback: function(event) {
-		if (this.options.type == 'submit' && this.form) {
-			this.form.submit();
-		} else if (this.options.type == 'reset' && this.form) {
+		if (this.sfOptions.buttonType == 'reset' && this.form) {
+			event.stop();
 			this.form.reset();
-		} else if (this.options.type == 'url' && this.options.url) {
+		} else if (this.sfOptions.buttonType == 'url' && this.sfOptions.url) {
+			event.stop();
 			location.href = this.options.url;
 		}
-		Event.stop(event);
+		return false;
 	},
 	tabsCallback: function(event) {
 		var el = event.element();
 		if (el.tagName.toLowerCase() == 'span') el = el.up('div');
 		el.tabsContainer.setTabs(el.previousSiblings().length);
 	},
-	setFormSubmiters: function(event) {
-		for (var i=0, len=this.forms.length; i<len; i++) {
-			console.log(Event.observe($(this.forms[i].id), 'submit', SiForm.Tools.formValidate));
+	formValidator: function(event, formO) {
+		var values = formO.serialize(true), fEls = formO.getElements(); foundError = false;
+		for (var i=0, len=this.validations.length; i<len; i++) {
+			var opts = this.validations[i], elValidations = opts.validations;
+			if (!Object.isArray(elValidations)) elValidations = [elValidations];
+
+			for (var j=0, lenj=elValidations.length; j<lenj; j++) {
+
+				valArr = elValidations[j].split("-");
+				validation = valArr.shift();
+				valParams = valArr;
+				if (vOpts = SiForm.Validations[validation]) {
+					// validate
+					if (vOpts.callback) {
+						passed = vOpts.callback(this, values, valParams, opts);
+					} else {
+						re = new RegExp(vOpts.pattern);
+						passed = re.test(values[opts.name] || "");
+					}
+
+					if (!passed) {
+						if (el = $('f_'+opts.name)) el.addError(elValidations[j], vOpts.message);
+					} else {
+						if (el = $('f_'+opts.name)) el.removeError(elValidations[j]);
+					}
+				}
+
+			}
+
 		}
+		event.stop();
 	},
-	formValidator: function(event) {
-		console.log(this, event);
-		alert('xxx');
-		Event.stop(event);
+
+	showTooltip: function(e) {
+		var el = e.element();
+		tagName = el.tagName.toLowerCase();
+		if (['label','input','textarea'].include(tagName) && el.hasErrors()) {
+			el = e.element();
+			el.showTooltip(e);
+		} else if (tagName == 'span' && el.up().hasErrors() && !el.up().hasClassName('sf-tab')) {
+			el.up().showTooltip(e);
+		}
+		e.stop();
+		return false;
+	},
+
+	hideTooltip: function(e) {
+		$('sf-tooltip').hide();
+		e.stop();
 	}
+
 };
 
 SiForm.Locale = {
@@ -574,3 +609,57 @@ SiForm.Locale = {
 		[9,'September'], [10,'October'], [11,'November'], [12,'December']
 	],
 };
+
+SiForm.ExtendElement = {
+	addError: function(element, error, message) {
+		element = $(element);
+		hadErrors = element.hasErrors();
+		if (!element.errors) element.errors = {};
+		if (!element.errors[error]) element.errors[error] = message;
+		if (!hadErrors) {
+			element.addClassName('sf-val-error');
+			if (element.sfOptions) {
+				if (label = element.label) label.addError(error, message);
+				if (gn = element.sfOptions.groupNode) $(gn).addError(error,message);
+				if (tab = element.sfOptions.tabTitle) tab.addError(error,message);
+			}
+			if (!element.bindedShowTooltip) {
+				element.bindedShowTooltip  = SiForm.Tools.showTooltip.bind(element);
+				element.observe('mouseover', element.bindedShowTooltip);
+				element.observe('mouseout', SiForm.Tools.hideTooltip);
+			}
+		}
+	},
+	removeError: function(element, error) {
+		element = $(element);
+		if (!element.errors) return;
+		if (!element.hasErrors()) return;
+		if (element.errors[error]) delete element.errors[error];
+		if (!element.hasErrors()) {
+			element.removeClassName('sf-val-error');
+			if (element.sfOptions) {
+				if (label = element.label) label.removeError(error);
+				if (gn = element.sfOptions.groupNode) gn.removeError(error);
+				if (tab = element.sfOptions.tabTitle) tab.removeError(error);
+			}
+			element.stopObserving('mouseover', element.bindedShowTooltip);
+			element.stopObserving('mouseout', SiForm.Tools.hideTooltip);
+			delete element.bindedShowTooltip;
+		}
+	},
+	hasErrors: function(element) {
+		element = $(element);
+		if (!element.errors) return false;
+		return Object.keys(element.errors).join("") != "";
+	},
+	showTooltip: function(element, event) {
+		element = $(element);
+		if (element.hasErrors()) {
+			tt = $('sf-tooltip').show();
+			tt.clonePosition(element, { setWidth: false, setHeight: false, offsetTop: element.getHeight() + 3 });
+			tt.update(Object.values(element.errors).join("<br/>"));
+		}
+	}
+}
+
+Element.addMethods(SiForm.ExtendElement);

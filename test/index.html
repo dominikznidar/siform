@@ -37,13 +37,13 @@
 						elements: [{
 							type: 'group',
 							title: 'Required / system info',
-							collapsible: false,
+							collapsible: true,
 							elementOptions: { customLabelStyle: 'margin-left: 5px;' },
 							elements: [{
 								type: 'textfield',
 								name: 'first_name',
 								label: 'First name:',
-								validations: ['required'],
+								validations: 'required',
 								value: 'Dominik'
 							}, {
 								type: "textfield",
@@ -113,6 +113,7 @@
 								elements: [{
 									type: 'textfield',
 									label: 'Text in tab 1:',
+									name: 'tabs[0][test]',
 									value: 'tab 1'
 								}]
 							},{
@@ -120,25 +121,31 @@
 								elements: [{
 									type: 'textfield',
 									label: 'Text in tab 2:',
-									value: 'tab 2'
+									value: 'tab 2',
+									name: 'tabs[1][test]'
 								},{
 									type: 'textfield',
 									label: 'Text 2 in tab 2:',
-									value: 'tab 2 / 2'
+									value: '',
+									name: 'tabs[1][test2]',
+									validations: 'required'
 								}]
 							}]
 						}],
 						buttons: {
 							customLabelStyle: 'margin-left: 5px;',
 							elements: [{
-								type: 'submit',
+								type: 'button',
+								buttonType: 'submit',
 								title: 'Save data'
 							}, {
-								type: 'reset',
+								type: 'button',
+								buttonType: 'reset',
 								title: 'Reset'
 							}, {
-								type: 'url',
-								url: '#',
+								type: 'button',
+								buttonType: 'url',
+								url: '?fromButton=1',
 								title: 'Go back'
 							}]
 						}

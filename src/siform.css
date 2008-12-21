@@ -1,8 +1,10 @@
 @CHARSET "UTF-8";
 
+
 .sf-form-element, .sf-group-element, .sf-tab-element {
 	padding: 3px 0; line-height: 15px;
 }
+
 
 .sf-label {
 	display: block; float: left; clear: left; padding: 3px 17px 3px 0px; color: #374569;
@@ -15,15 +17,17 @@ label.sf-val-error span {
 	border-bottom: dashed 1px #C33; color: #C33;
 }
 
+
 .sf-textfield, .sf-textarea, sf-select {
 	background: #F7F7F7; border: solid 1px; border-color: #999999 #AAB3B3 #D5DDDD; padding: 3px; line-height: 15px;
 }
 .sf-checkboxes, .sf-radios {
 	float: left;
 }
-.sf-val-error {
+input.sf-val-error,textarea.sf-val-error {
 	border-color: #C33; background-color: #FEE;
 }
+
 
 .sf-tooltip {
 	position: absolute; display: block; background: #FEE; border: solid 3px #C33; padding: 2px 7px; margin: 2px 2px 0 0;
@@ -31,6 +35,7 @@ label.sf-val-error span {
 .sf-tooltip P {
 	margin: 5px 0px; padding: 0; color: #C33;
 }
+
 
 .sf-sub-element {
 	padding-bottom: 2px;
@@ -42,24 +47,35 @@ label.sf-val-error span {
 	padding-top: 2px;
 }
 
+
 .sf-group {
 	margin:0; padding:0; border:none; border-top: solid 2px #19ABCE; margin-bottom: 1em;
 }
+fieldset.sf-val-error {
+	background: none;
+}
 .sf-group-title {
-	padding: 5px; background-color: #19ABCE; color: white; border-right: solid 3px white; font-size: 11px; line-height: 12px; text-transform: uppercase;
+	padding: 0; margin: 0; background-color: #19ABCE; border-right: solid 3px white;
+}
+.sf-group-title span {
+	display: block; padding: 5px; font-size: 11px; line-height: 12px; text-transform: uppercase; color: white;
+}
+fieldset.sf-val-error .sf-group-title {
+	background: #d14747 url(images/sf-error.gif) no-repeat 5px 6px; padding-left: 16px;
 }
 .sf-group-content {
 	padding-top: 5px;
 }
-.sf-group-collapsible .sf-group-title {
-	padding-left: 19px; background: #19ABCE url(images/sf-group-close.gif) no-repeat 5px 6px; cursor: pointer;
+.sf-group-collapsible .sf-group-title span {
+	padding-left: 19px; background: url(images/sf-group-close.gif) no-repeat 5px 6px; cursor: pointer;
 }
-.sf-group-collapsed .sf-group-title {
+.sf-group-collapsed .sf-group-title span {
 	background-image: url(images/sf-group-open.gif);
 }
 .sf-group-collapsed .sf-group-content {
 	display: none;
 }
+
 
 .sf-tabs-container {
 	margin-bottom: 1em;
@@ -76,6 +92,10 @@ label.sf-val-error span {
 .sf-tab-active {
 	background-color: #19ABCE;
 }
+.sf-tabs .sf-val-error {
+	background: #d14747 url(images/sf-error.gif) no-repeat 5px 6px; padding-left: 19px;
+}
+
 
 .sf-buttons-bar {
 	background: #19ABCE; padding: 5px 0;
