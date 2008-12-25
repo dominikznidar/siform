@@ -55,3 +55,6 @@ That's it.
 
 == Documentation
 For now, please try to make sense from file: tests/index.html
+
+== Example
+view here[link:http://tools.dominikz.com/siform/test/]
