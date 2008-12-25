@@ -126,7 +126,7 @@ fieldset.sf-val-error .sf-group-title {
 	background: #19ABCE; padding: 5px 0; margin-top: 3px;
 }
 .sf-buttons-bar button {
-	width: auto; background: white; font-size: 10px; line-height: 12px; text-transform: uppercase; border: none; padding: 3px 10px; margin-right: 5px; color: #374569;
+	width: auto; _width: 1; overflow: visible; background: white; font-size: 10px; line-height: 12px; text-transform: uppercase; border: none; padding: 3px 10px; margin-right: 5px; color: #374569;
 }
 
 
