@@ -57,4 +57,4 @@ That's it.
 For now, please try to make sense from file: tests/index.html
 
 == Example
-here[http://tools.dominikz.com/siform/test/]
+  http://tools.dominikz.com/siform/test/
