@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<title>SiForm tests</title>
+		<link href="style.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript" src="../lib/prototype.js"></script>
+		<script type="text/javascript" src="../lib/builder.git.js"></script>
+
+		<!-- SIFORM start -->
+		<script type="text/javascript" src="../src/siform.js"></script>
+		<link href="../src/siform.css" rel="stylesheet" type="text/css" />
+		<!-- SIFORM END -->
+
+		<style>
+			#responder {
+				background: lightgreen;
+				padding: 10px;
+				border: solid 2px green;
+				margin-bottom: 20px;
+				width: 420px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<h1>Siform - ajax updater</h1>
+
+		<div id="responder" style="display:none;"></div>
+
+		<div id="SiformSimple">siform will rendered here</div>
+
+		<script type="text/javascript">
+			document.observe("dom:loaded", function() {
+				var siformSimple = new SiForm($("SiformSimple"), {
+					width: 440,
+					elements: [{
+						type: 'form',
+						action: 'sampleAjaxResponse.php',
+						ajax: true,
+						update: 'responder',
+						ajaxOptions: {
+							onComplete: function() { $('responder').show(); }
+						},
+						elementOptions: {
+							width: 250,
+							labelWidth: 160
+						},
+						elements: [{
+							type: 'columns',
+							label: 'First and last name:',
+							elements: [{
+								type: 'textfield',
+								name: 'name',
+								validations: 'required',
+								value: ''
+							},{
+								type: 'textfield',
+								name: 'surname',
+								validations: 'required',
+								value: ''
+							}]
+						}]
+					}]
+				});
+			});
+		</script>
+
+	</body>
+</html>
