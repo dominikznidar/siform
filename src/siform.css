@@ -122,6 +122,13 @@ fieldset.sf-val-error .sf-group-title {
 }
 
 
+.sf-columns {
+	float: left;
+}
+.sf-columns .sf-column-element {
+	float: left;
+}
+
 .sf-buttons-bar {
 	background: #19ABCE; padding: 5px 0; margin-top: 3px;
 }

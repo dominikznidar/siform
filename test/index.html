@@ -39,17 +39,28 @@
 							collapsible: true,
 							elementOptions: { customLabelStyle: 'margin-left: 5px;' },
 							elements: [{
-								type: 'textfield',
-								name: 'first_name',
-								label: 'First name:',
-								validations: 'required',
-								value: 'Dominik'
-							}, {
-								type: "textfield",
-								label: "Last name:",
-								name: "last_name",
-								validations: ["required"],
-								value: "Znidar"
+								type: 'columns',
+								elementOptions: { width: 125 },
+								label: 'First and last name:',
+								elements: [{
+									type: 'textfield',
+									name: 'first_name',
+									//label: 'First and last name:',
+									validations: 'required',
+									value: 'Dominik'
+								}, {
+									type: "textfield",
+									//label: "Last name:",
+									name: "last_name",
+									validations: ["required"],
+									value: "Znidar"
+								}, {
+									type: "textfield",
+									//label: "Last name:",
+									name: "test",
+									validations: ["required"],
+									value: "Znidar"
+								}]
 							}, {
 								type: "textfield",
 								label: "E-mail:",

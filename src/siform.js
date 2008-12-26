@@ -40,7 +40,9 @@ var SiForm = Class.create({
 	initialize: function(element, options) {
 		this.element = element;
 		this.options = Object.extend({
-			elements: []
+			elements: [],
+			columnsSpacing: 6,
+			additionalElementPadding: 4
 		}, options || {});
 		this.element.update('').setStyle({ width: this.options.width+'px' });
 		this.buildElements(this.options.elements, this.element);
@@ -172,10 +174,11 @@ SiForm.Elements = {
 		}, options || {});
 		if (!options.label) return el;
 
+		forEl = el.identify();
 		var label = Builder.node('label', {
 			className: 'sf-label'+(options.customLabelClass ? ' '+options.customLabelClass : ''),
 			style: 'width: '+options.labelWidth+'px;'+(options.customLabelStyle ? ' '+options.customLabelStyle : ''),
-			htmlFor: 'f_'+options.name
+			htmlFor: forEl
 		}, [ Builder.node('span', options.label) ]);
 		el.label = label;
 
@@ -514,6 +517,39 @@ SiForm.Elements = {
 
 	},
 
+	columns: function(options) {
+		options = Object.extend({
+			elementOptions: {},
+			elements: [],
+			customClass: '',
+			customStyle: '',
+			width: 150,
+			name: 'sf-columns-'+Math.round(Math.random() * 10000),
+			id: 'sf-tabs-'+Math.round(Math.random() * 10000)
+		}, options || {});
+
+		var el = Builder.node('div', {
+			className: 'sf-columns' + (options.customClassName ? ' '+options.customClassName : ''),
+			style: "width: "+ (options.width + (this.options.additionalElementPadding*2))+ "px;" + (options.customStyle ? " "+options.customStyle : "")
+		}), elLen = options.elements.length, elPad = this.options.additionalElementPadding, coSpa = this.options.columnsSpacing;
+		cId = el.identify();
+
+		passedOptions = Object.extend({ prevElementOptions: Object.clone(options.elementOptions) }, options.elementOptions || {});
+		paCount = (elLen - 1) * 2;
+		spCount = elLen - 1;
+		colWidth = Math.floor((options.width - paCount * elPad - spCount * coSpa) / elLen);
+		for (var i=0,len = options.elements.length; i<len; i++) {
+			passedOptions.width = colWidth;
+			if (i < len-1) passedOptions.customStyle = 'margin-right: '+this.options.columnsSpacing+'px;'
+			else passedOptions.customStyle = "";
+			passedOptions.labelFromId = cId;
+			this.buildElements([options.elements[i]], el, 'column-element', passedOptions);
+		}
+
+		return el;
+
+	},
+
 	hidden: function(options) {
 		options = Object.extend({
 			value: '',
@@ -576,7 +612,7 @@ SiForm.Tools = {
 		el.tabsContainer.setTabs(el.previousSiblings().length);
 	},
 	formValidator: function(event, formO) {
-		var values = formO.serialize(true), fEls = formO.getElements(); foundError = false;
+		var values = formO.serialize(true), fEls = formO.getElements(), foundErrors = false;
 		for (var i=0, len=this.validations.length; i<len; i++) {
 			var opts = this.validations[i], elValidations = opts.validations;
 			if (!Object.isArray(elValidations)) elValidations = [elValidations];
@@ -641,6 +677,7 @@ SiForm.Locale = {
 SiForm.ExtendElement = {
 	addError: function(element, error, message) {
 		element = $(element);
+		if (error.indexOf('||')==-1) error += "||" + element.identify();
 		hadErrors = element.hasErrors();
 		if (!element.errors) element.errors = {};
 		if (!element.errors[error]) element.errors[error] = message;
@@ -648,6 +685,9 @@ SiForm.ExtendElement = {
 			element.addClassName('sf-val-error');
 			if (element.sfOptions) {
 				if (label = element.label) label.addError(error, message);
+				else if (element.sfOptions.labelFromId) {
+					if (pel = $(element.sfOptions.labelFromId)) pel.label.addError(error, message);
+				}
 				if (gn = element.sfOptions.groupNode) $(gn).addError(error,message);
 				if (tab = element.sfOptions.tabTitle) tab.addError(error,message);
 			}
@@ -660,6 +700,7 @@ SiForm.ExtendElement = {
 	},
 	removeError: function(element, error) {
 		element = $(element);
+		if (error.indexOf('||')==-1) error += "||" + element.identify();
 		if (!element.errors) return;
 		if (!element.hasErrors()) return;
 		if (element.errors[error]) delete element.errors[error];
@@ -667,6 +708,9 @@ SiForm.ExtendElement = {
 			element.removeClassName('sf-val-error');
 			if (element.sfOptions) {
 				if (label = element.label) label.removeError(error);
+				else if (element.sfOptions.labelFromId) {
+					if (pel = $(element.sfOptions.labelFromId)) pel.label.removeError(error);
+				}
 				if (gn = element.sfOptions.groupNode) gn.removeError(error);
 				if (tab = element.sfOptions.tabTitle) tab.removeError(error);
 			}
