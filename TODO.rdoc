@@ -2,7 +2,6 @@
 
 * consistency in elements
 * cross browser compatibility (ie6+)
-* form element - ajax support
 * add more validations
   * min/maxLength
   * min/maxSelected
@@ -14,4 +13,5 @@
   * ?datepicker
   * complex element example
 
+* watermark functionality for input fields
 * create a subsite for links to sites using siform :)

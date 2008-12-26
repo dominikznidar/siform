@@ -133,8 +133,13 @@ SiForm.Elements = {
 			elementOptions: {},
 			elements: [],
 			buttons: [],
-			id: 'sf-form-'+Math.round(Math.random() * 100000)
+			id: 'sf-form-'+Math.round(Math.random() * 100000),
+			ajax: false,
+			ajaxOptions: null,
+			update: ''
 		}, options || {});
+
+		if (options.update) options.ajax = true;
 
 		formTagOpts = {
 			action: options.action,
@@ -146,7 +151,6 @@ SiForm.Elements = {
 		el.formOptions = options;
 
 		// set validator check
-		//Event.observe($(el), 'submit', SiForm.Tools.formValidator.bind(this));
 		Event.observe($(el), 'submit', SiForm.Tools.formValidator.bindAsEventListener(this, el));
 
 		// build elements
@@ -539,11 +543,11 @@ SiForm.Elements = {
 		spCount = elLen - 1;
 		colWidth = Math.floor((options.width - paCount * elPad - spCount * coSpa) / elLen);
 		for (var i=0,len = options.elements.length; i<len; i++) {
-			passedOptions.width = colWidth;
-			if (i < len-1) passedOptions.customStyle = 'margin-right: '+this.options.columnsSpacing+'px;'
-			else passedOptions.customStyle = "";
-			passedOptions.labelFromId = cId;
-			this.buildElements([options.elements[i]], el, 'column-element', passedOptions);
+			po = Object.clone(passedOptions);
+			po.width = colWidth;
+			if (i < len-1) po.customStyle = 'margin-right: '+coSpa+'px;'
+			po.labelFromId = cId;
+			this.buildElements([options.elements[i]], el, 'column-element', po);
 		}
 
 		return el;
@@ -643,7 +647,21 @@ SiForm.Tools = {
 
 		}
 
-		if (foundErrors) event.stop();
+		if (foundErrors) {
+			event.stop();
+		} else if (formO.sfOptions.ajax) {
+			opts = formO.sfOptions;
+			opts.ajaxOptions.parameters = values;
+			opts.ajaxOptions.method = opts.method || 'post';
+
+			if (opts.update) {
+				new Ajax.Updater(opts.update, opts.action, opts.ajaxOptions);
+			} else {
+				new Ajax.Request(opts.action, opts.ajaxOptions);
+			}
+
+			event.stop();
+		}
 	},
 
 	showTooltip: function(e) {
