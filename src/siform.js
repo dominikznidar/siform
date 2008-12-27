@@ -139,13 +139,11 @@ SiForm.Elements = {
 			update: ''
 		}, options || {});
 
-		if (options.update) options.ajax = true;
-
-		formTagOpts = {
+		formTagOpts = SiForm.Tools.setClassAndStyle(options, {
 			action: options.action,
 			method: options.method,
 			id: options.id
-		};
+		}, 'sf-form');
 
 		var el = Builder.node('form', formTagOpts);
 		el.formOptions = options;
@@ -214,15 +212,10 @@ SiForm.Elements = {
 		options = Object.extend({
 			type: 'submit',
 			title: 'submit',
-			url: '',
-			customClass: '',
-			customStyle: ''
+			url: ''
 		}, options || {});
 
-		var btn = Builder.node('button', {
-			className: 'sf-button' + (options.customClass ? ' '+options.customClass : ''),
-			style: options.customStyle
-		}, options.title);
+		var btn = Builder.node('button', SiForm.Tools.setClassAndStyle(options, {}, 'sf-button'), options.title);
 
 		$(btn).observe('click', SiForm.Tools.buttonCallback);
 
@@ -236,20 +229,16 @@ SiForm.Elements = {
 			name: '',
 			value: '',
 			isPassword: false,
-			customStyle: '',
-			customClass: '',
 			width: 150
 		}, options || {});
 
 		// set properties
-		properties = {
+		properties = SiForm.Tools.setClassAndStyle(options, {
 			type: options.isPassword ? "password" : "text",
 			name: options.name,
 			value: options.value,
-			id: 'f_'+options.name,
-			className:"sf-textfield"+(options.customClass ? " "+options.customClass : ""),
-			style: (options.width ? 'width: '+options.width+'px; ' : '')+(options.customStyle ? " "+options.customStyle : "")
-		};
+			id: 'f_'+options.name
+		}, 'sf-textfield');
 
 		// build element
 		return Builder.node('input', properties);
@@ -266,13 +255,11 @@ SiForm.Elements = {
 			width: 150
 		}, options || {});
 
-		var properties = {
+		var properties = SiForm.Tools.setClassAndStyle(options, {
 			name: options.name,
 			id: "f_"+options.name,
-			rows: options.rows,
-			className:"sf-textfield"+(options.customClass ? " "+options.customClass : ""),
-			style: (options.width ? 'width: '+options.width+'px; ' : '')+(options.customStyle ? " "+options.customStyle : "")
-		};
+			rows: options.rows
+		}, 'sf-textarea');
 
 		return Builder.node("textarea", properties, options.value);
 	},
@@ -294,12 +281,13 @@ SiForm.Elements = {
 		}, options || {});
 
 		// build element
-		node = Builder.node("select", Object.extend(options.multiple ? { multiple: "1", size: options.size } : {}, {
-			name: options.name,
-			id: "f_"+options.name,
-			className: "sf-select"+(options.customClass ? " "+options.customClass : ""),
-			style: (options.width ? "width: "+options.width+"px;":"")+(options.customStyle ? " "+options.customStyle : "")
-		}));
+		node = Builder.node("select", SiForm.Tools.setClassAndStyle(
+			options,
+			Object.extend(options.multiple ? { multiple: "1", size: options.size } : {}, {
+				name: options.name,
+				id: "f_"+options.name
+			}),
+		'sf-select'));
 
 		var els = [];
 		var valuesType = Object.isArray(options.values[0]) ? "array" : (typeof(options.values[0])=="object" ? "json" : "simple");
@@ -336,7 +324,11 @@ SiForm.Elements = {
 		}, options || {});
 
 		// build element
-		var el = Builder.node("div", { className: " sf-radios", id: 'f_'+options.name }), els = [];
+		var el = Builder.node("div", SiForm.Tools.setClassAndStyle(
+			options,
+			{ id: 'f_'+options.name },
+			'sf-radios'
+		)), els = [];
 
 		if (!options.values.length) return "no values";
 		for (var i=0, len=options.values.length; i<len; ++i) {
@@ -366,7 +358,11 @@ SiForm.Elements = {
 		}, options || {});
 
 		// build element
-		var el = Builder.node("div", { className: " sf-checkboxes", id: 'f_'+options.name });
+		var el = Builder.node("div", SiForm.Tools.setClassAndStyle(
+			options,
+			{ id: 'f_'+options.name },
+			'sf-checkboxes'
+		));
 
 		if (!options.values.length) return "no values";
 		if (!Object.isArray(options.value)) options.value = [options.value];
@@ -584,21 +580,18 @@ SiForm.Validations = {
 }
 
 SiForm.Tools = {
-	fixWidth: function(selector, margin) {
-		var maxWidth = 0;
-		$$(selector).each(function(el) { width = el.getWidth(); maxWidth = width > maxWidth ? width : maxWidth; });
-		if (margin) maxWidth += margin;
-		$$(selector).each(function(el) { el.style.width = maxWidth+"px"; });
-		return maxWidth;
-	},
-	setStyle: function(selector,styles) {
-		var setStyleStyles = styles;
-		$$(selector).each(function(el) { el.setStyle(setStyleStyles); });
-	},
-	enumerableToOptions: function(enumerabl, selectd, callbeck) {
-		var enToOpts_selected = selectd;
-		if (!callbeck) callbeck = function(el) { return ["option", Object.extend(enToOpts_selected==el?{ selectd: "1" }:{},{ value: el }), [el.toString()]] };
-		return enumerabl.collect(callbeck);
+	setClassAndStyle: function(elOpts, bOpts, classNames, styles) {
+		elOpts = Object.extend({ customClass: [], customStyle: [], width: '' }, elOpts || {});
+		if (Object.isString(elOpts.customClass)) elOpts.customClass = [elOpts.customClass];
+		if (Object.isString(elOpts.customStyle)) elOpts.customStyle = [elOpts.customStyle];
+		if (classNames) elOpts.customClass.push(classNames);
+		if (styles) elOpts.customStyle.push(styles);
+		if (elOpts.width) elOpts.customStyle.push('width: '+elOpts.width+'px;');
+
+		return Object.extend(bOpts, {
+			className: elOpts.customClass.join(' '),
+			style: elOpts.customStyle.join(' ')
+		});
 	},
 	buttonCallback: function(event) {
 		if (this.sfOptions.buttonType == 'reset' && this.form) {
