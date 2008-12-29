@@ -531,7 +531,7 @@ SiForm.Elements = {
 		var el = Builder.node('div', {
 			className: 'sf-columns' + (options.customClassName ? ' '+options.customClassName : ''),
 			style: "width: "+ (options.width + (this.options.additionalElementPadding*2))+ "px;" + (options.customStyle ? " "+options.customStyle : "")
-		}), elLen = options.elements.length, elPad = this.options.additionalElementPadding, coSpa = this.options.columnsSpacing;
+		}), elLen = options.columns || options.elements.length, elPad = this.options.additionalElementPadding, coSpa = this.options.columnsSpacing;
 		cId = el.identify();
 
 		passedOptions = Object.extend({ prevElementOptions: Object.clone(options.elementOptions) }, options.elementOptions || {});
@@ -540,7 +540,12 @@ SiForm.Elements = {
 		colWidth = Math.floor((options.width - paCount * elPad - spCount * coSpa) / elLen);
 		for (var i=0,len = options.elements.length; i<len; i++) {
 			po = Object.clone(passedOptions);
-			po.width = colWidth;
+			elCols = options.elements[i].columns || 1;
+			if (elCols==1) {
+				po.width = colWidth;
+			} else {
+				po.width = colWidth * elCols + (elCols-1)*coSpa + (elCols-1) * 2 * elPad;
+			}
 			if (i < len-1) po.customStyle = 'margin-right: '+coSpa+'px;'
 			po.labelFromId = cId;
 			this.buildElements([options.elements[i]], el, 'column-element', po);
